@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load static %}
+
+
+  <div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">Data Quality Assessment</h1>
+      <p class="col-md-8 fs-4">Here, we provide five indicators to help you evalute your data quality. 
+        In addition, we also show basic statstical information about your data. 
+        Come and join our adventure now!</p>
+      <div class="mt-3"> 
+        {% if user.is_authenticated %}
+          <a class="btn btn-primary btn-lg text-white" href="{% url 'upload-view' %}">GET STARTED</a>
+        {% else %}
+          <a class="btn btn-primary btn-lg text-white" href="{% url 'login' %}">GET STARTED</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  
+  
+  <div class="row p-4">
+    <div class="col-lg-6 col-12 align-self-center">
+      <h3>1. Upload your data</h3>
+      <div class="px-4">
+        <p>You need to upload two CSV files and follow our format.</p>
+      </div>
+    </div>
+    <div class="col-lg-6 col-12">
+      <img class="img-fluid" src="{% static 'images/upload_view.png' %}" alt="upload image">
+    </div>
+  </div>
+
+  <div class="row p-4">
+    <div class="col-lg-6 col-12 align-self-center">
+      <h3>2. Fill two indicator form</h3>
+      <div class="px-4">
+        <p>Accoring to your dataset, finishing timeliness and security form.</p>
+      </div>
+    </div>
+    <div class="col-lg-6 col-12">
+      <img class="img-fluid" src="{% static 'images/form.png' %}" alt="upload image">
+    </div>
+  </div>
+
+  <div class="row p-4">
+    <div class="col-lg-6 col-12 align-self-center">
+      <h3>3. Data Overview</h3>
+      <div class="px-4">
+        <p>According to the dataset you provide, 
+          we will make descriptive exploratory analysis for your dataset.</p>
+      </div>
+    </div>
+    <div class="col-lg-6 col-12">
+      <img class="img-fluid" src="{% static 'images/overview.png' %}" alt="upload image">
+    </div>
+  </div>
+
+  <div class="row p-4">
+    <div class="col-lg-6 col-12 align-self-center">
+      <h3>4. Data Quality Indicator</h3>
+      <div class="px-4">
+        <p>According to the dataset and form results you provide,
+          we will show five data quality indicators for your dataset.
+        </p>
+      </div>  
+    </div>
+    <div class="col-lg-6 col-12">
+      <img class="img-fluid" src="{% static 'images/indicator.png' %}" alt="upload image">
+    </div>
+  </div>
+
+{% endblock %}

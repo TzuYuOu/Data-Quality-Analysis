@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+
+
+{% block scripts %}
+
+  <script>
+    const dataname = '{{ data | safe }}'
+    const labels = [
+      'Accuracy',
+      'Completeness',
+      'Information content',
+      'Security',
+      'Timeliness',
+    ];
+    const ind_data = {
+      labels: labels,
+      datasets: [{
+        label: dataname,
+        data: {{ indicator_scores | safe }},
+        fill: true,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgb(255, 99, 132)',
+        pointBackgroundColor: 'rgb(255, 99, 132)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(255, 99, 132)'
+      }]
+    };
+    const config = {
+      type: 'radar',
+      data: ind_data,
+      options: {
+        elements: {
+          line: {
+            borderWidth: 3
+          }
+        },
+      }
+    };
+    
+    window.onload = function(){
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+    }
+
+  </script>
+
+{% endblock scripts %}
+
+{% block style %}
+
+  <style> 
+    .scroll {
+      height: 300px;
+      overflow: auto;
+    }
+  </style>
+
+{% endblock style %}
+
+{% block content %}
+
+  {% include 'mainapp/data_navbar.html' %}
+  
+  {% if correctFormat %}
+    <div class="my-3 d-flex">
+      <h3>Indicator</h3>
+      <div class="ms-auto">
+        <a class="btn btn-success btn-sm" href="{% url 'recalculate-indicator' data_id %}">Recalculate Indicator</a>
+      </div>
+    </div>
+    
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+    <hr>
+
+    <div class="row">
+      <h3 class="my-3">Description</h3>
+      <!-- Show Description -->
+      <div class="col-12">
+        <ul>
+          <li>
+            Completeness : The extent to which data is not missing and of sufficient breadth and depth for the task at hand.
+          </li>
+          <li>
+            Timeliness : The extent to which the data is sufficiently up to date for task at hand.
+          </li>
+          <li>
+            Security : The extent to which access to data is restricted appropriately to maintain its security.
+          </li>
+          <li>
+            Information content : Gain Ratio for Attribute Selection
+          </li>
+          <li>
+            Accuracy : The extent to which data are correct, reliable and certified. Correlation between columns
+          </li>
+          
+        </ul>
+      </div>
+      <h3>Detail</h3>
+      <!-- Show Completeness -->
+      <div class="col-md-4 col-12">
+        <div class="card mb-3">
+          <div class="card-header">
+            Completeness
+          </div>
+          <div class="card-body">
+            Score : {{ comp_score }}
+          </div>
+        </div>
+      </div>
+      <!-- Show Timeliness -->
+      <div class="col-md-4 col-12">
+        <div class="card mb-3">
+          <div class="card-header">
+            Timeliness
+          </div>
+          <div class="card-body">
+            {% if time_finished %}
+              Score : {{ time_detail }}
+            {% else %}
+              {{ time_detail }} 
+              please finish <a href="{% url 'fillout-timeliness' data_id %}">timeliness form</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <!-- Show Security -->
+      <div class="col-md-4 col-12">
+        <div class="card mb-3">
+          <div class="card-header">
+            Security
+          </div>
+          <div class="card-body">
+            {% if sec_finished %}
+              Score : {{ sec_detail }}
+            {% else %}
+              {{ sec_detail }}
+              please finish <a href="{% url 'fillout-security' data_id %}">security form</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <!-- Show InfoContent -->
+      <div class="col-md-4 col-12">
+        <div class="card mb-3">
+          <div class="card-header">
+            Information Content
+          </div>
+          <div class="card-body scroll">
+            {% if gainRatio %}
+              <strong>Gain Ratio</strong>
+              <ul class="list-group list-group-flush">
+                {% for key, value in gainRatio.items %}
+                  <li class="list-group-item">{{ key }}: {{ value | floatformat:0 }}</li> 
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if var_score %}
+              <strong>Variance Score</strong>
+              <ul class="list-group list-group-flush">
+                {% for key, value in var_score.items %}
+                  <li class="list-group-item">{{ key }}: {{ value | floatformat:0 }}</li> 
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <!-- Show Accuracy -->
+      <div class="col-md-4 col-12">
+        <div class="card mb-3">
+          <div class="card-header">
+            Accuracy
+          </div>
+          <div class="card-body scroll">
+            <span> Score: {{ acc_detail }}</span>
+            <ul class="list-group list-group-flush">
+              {% for key, value in acc_res.items %}
+                <li class="list-group-item">{{ key }}: {{ value }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>  
+    </div>
+
+    <hr>
+
+    <h3>Summary</h3>
+    <div class="p-4">
+      <div class="row">
+        <div class="col-4">
+          <div class="list-group" id="list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action active" id="list-data-list" data-toggle="list" href="#list-data" role="tab" aria-controls="data">Data</a>
+            <a class="list-group-item list-group-item-action" id="list-completeness-list" data-toggle="list" href="#list-completeness" role="tab" aria-controls="completeness">Completeness</a>
+            <a class="list-group-item list-group-item-action" id="list-accuracy-list" data-toggle="list" href="#list-accuracy" role="tab" aria-controls="accuracy">Accuracy</a>
+            <a class="list-group-item list-group-item-action" id="list-information-list" data-toggle="list" href="#list-information" role="tab" aria-controls="information">Information Content</a>
+            <a class="list-group-item list-group-item-action" id="list-security-list" data-toggle="list" href="#list-security" role="tab" aria-controls="security">Security</a>
+            <a class="list-group-item list-group-item-action" id="list-timeliness-list" data-toggle="list" href="#list-timeliness" role="tab" aria-controls="timeliness">Timeliness</a>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="tab-content" id="nav-tabContent">
+            <!-- Data suggestion -->
+            <div class="tab-pane fade show active " id="list-data" role="tabpanel" aria-labelledby="list-data-list">
+              {% if summary.missing_ratio_alarm %}
+                <strong>More than 10% of the data is missing in the columns</strong> 
+                <div class="p-4">
+                  <table class="table">
+                    <tbody>
+                      {% for var, ratio in summary.missing_ratio_alarm.items %}
+                      <tr>
+                        <th>{{ var }}</th>
+                        <td>{{ ratio|floatformat:2 }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% else %}
+                <p>No column has more than 10% missing value.</p> 
+              {% endif %}
+                
+              {% if summary.Imbalance_Alarm %}
+                <strong>There are data imbalance problems in the columns:</strong>
+                <div class="p-4">
+                  <table class="table">
+                    <tbody>
+                      {% for var, ratio in summary.Imbalance_Alarm.items %}
+                        <tr>
+                          <th>{{ var }}</th>
+                          <td>{{ ratio|floatformat:2 }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table> 
+                </div>
+              {% else %}
+                No data imbalance in the column.
+              {% endif %}
+               
+            </div>
+            <!-- Completeness suggestion -->
+            <div class="tab-pane fade" id="list-completeness" role="tabpanel" aria-labelledby="list-completeness-list">
+              {% if comp_score < 50 %}
+                <p>Completeness score is too low. You need to collect more data.</p> 
+              {% else %}
+                <p>The data columns are very complete.</p>
+              {% endif %}
+            </div>
+            <!-- Accuracy suggestion -->
+            <div class="tab-pane fade" id="list-accuracy" role="tabpanel" aria-labelledby="list-accuracy-list">
+              {% if opposite_var_warning %}
+                <strong>The direction difference between the variable and the predicted target is in descending order: </strong>
+                <div class="p-4">
+                  <table class="table">
+                    <tbody>
+                      {% for var, beta in opposite_var_warning.items %}
+                        <tr>
+                          <th>{{ var }}</th>
+                          <td>{{ beta | floatformat:2 }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% else %}
+                <p>The data is very correct.</p>
+              {% endif %}
+            </div>
+            <!-- Information Content suggestion -->
+            <div class="tab-pane fade" id="list-information" role="tabpanel" aria-labelledby="list-information-list">...</div>
+            <!-- Security suggestion -->
+            <div class="tab-pane fade" id="list-security" role="tabpanel" aria-labelledby="list-security-list"> 
+              {% if sec_finished %}
+                {% if sec_improved %}
+                  <p class="h4">Please Improved Questions below</p>
+                  <ul>
+                    {% for s in sec_improved %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              
+                {% if sec_checked %}
+                  <p class="h4">Please Checked Questions below</p>
+                  <ul>
+                    {% for s in sec_checked %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                {% if not sec_improved and not sec_checked %}
+                  <p>The data is very secure</p>
+                {% endif %}
+              {% else %}
+              <p>You haven't finished security form. 
+                <a href="{% url 'fillout-security' data_id %}">Do it now!!</a>
+              </p> 
+              {% endif %}
+            </div>
+            <!-- Timeliness suggestion -->
+            <div class="tab-pane fade" id="list-timeliness" role="tabpanel" aria-labelledby="list-timeliness-list">
+              {% if time_finished %}
+                {% if time_improved %}
+                  <p class="h4">Please Improved Questions below</p>
+                  <ul>
+                    {% for s in time_improved %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              
+                {% if time_checked %}
+                  <p class="h4">Please Checked Questions below</p>
+                  <ul>
+                    {% for s in time_checked %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                {% if not time_improved and not time_checked %}
+                  <p>The data is very timeliness.</p>
+                {% endif %}
+
+              {% else %}
+                <p>You haven't finished timeliness form. 
+                  <a href="{% url 'fillout-timeliness' data_id %}">Do it now!!</a>
+                </p>  
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <h3 class="my-3">Indicator</h3>
+    <div class="alert alert-danger">
+      <p> Your data format is not correct. Please 
+        <a href="{% url 'update-data' data_id %}">update</a>
+      </p>
+    </div>
+  {% endif %}
+
+
+{% endblock %}

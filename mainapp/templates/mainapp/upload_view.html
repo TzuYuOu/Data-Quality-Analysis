@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% if submitted %}
+    <div class="alert alert-success">
+      <p>Your data was submitted successfully!!!
+        <a href="{% url 'list-data' %}">Go Data List</a>
+      </p> 
+    </div>
+ 
+  {% else %}
+    <div class="alert alert-warning text-black">
+      <h4 class="alert-heading">Format the upload data</h4>
+      <p>Please upload the following two CSV files to assess the quality of the data. 
+        If the data is not in the correct format, you may obtain wrong evaluation results.</p>
+      <h4>Raw data</h4>
+      <ul>
+        <li>File should no larger than 2MB and must be CSV format.</li>
+      </ul>
+      <h4>Column data</h4>
+      <ul>
+        <li>File should no larger than 2MB and must be CSV format.</li>
+        <li>Each of columns should fall into one of the following five categories such as I_nominal, I_ordinal, C_nominal, C_ordinal and other.</li>
+        <li>Need to specify which column is your target.</li>
+        <li>Need to specify whether your problem is a regression or a classification.</li>
+      </ul>
+      <hr>
+      <p>You can download below two files for reference.</p>
+      <a class="btn btn-primary btn-sm" href="{% url 'download-rawdata' %}">Raw data</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'download-attrdata' %}">Column data</a>
+    </div>
+    
+    <div class="card my-3">
+      <div class="card-header">
+        <h3>Upload data</h3>
+      </div>
+      <form class="card-body" action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-success">
+      </form>
+    </div>
+    
+
+  {% endif %}
+
+{% endblock %}

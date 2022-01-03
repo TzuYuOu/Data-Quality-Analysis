@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div class="my-3 d-flex">
+    <h3>Dataset List</h3>
+    <div class="ms-auto">
+      <a class="btn btn-success" href="{% url 'upload-view'%}">Add Normal Data</a>
+    </div>
+  </div>
+  
+  {% if data_list %}
+    <table class="table table-striped table-hover table-bordered">
+      {% for data in data_list %}
+        <tr>
+          <td>
+            {{ data }}
+          </td>
+          <td class="text-end">
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'show-data' data.id %}">Details</a>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'update-data' data.id%}">Update</a>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'delete-data' data.id%}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <div class="alert alert-warning">
+      You haven't upload your data.
+    </div>
+  {% endif %}
+
+  <div class="my-3 d-flex">
+    <h3>High Frequency Dataset List</h3>
+    <div class="ms-auto">
+      <a class="btn btn-success" href="{% url 'upload-hfd' %}">Add HFD</a>
+    </div>
+  </div>
+
+  {% if hfd_list %}
+    <table class="table table-striped table-hover table-bordered">
+      {% for data in hfd_list %}
+        <tr>
+          <td>
+            {{ data }}
+          </td>
+          <td class="text-end">
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'show-hfd' data.id %}">Details</a> 
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <div class="alert alert-warning">
+      You haven't upload high frequency data.
+    </div>
+  {% endif%}
+
+  {% if hftd_list %}
+    <div>
+      <h3>High Frequency Transformation Dataset</h3>
+      <table class="table table-striped table-hover table-bordered">
+        {% for data in hftd_list %}
+          <tr>
+            <td>
+              {{ data }}
+            </td>
+            <td class="text-end">
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'show-data' data.id %}">Details</a> 
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+   
+{% endblock %}

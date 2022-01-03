@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if submitted %}
+  <div class="alert alert-success">
+    <p>Your data was submitted successfully!!!
+      <a href="{% url 'list-data' %}">Go Data List</a>
+    </p> 
+  </div>
+{% else %}
+  <div class="card my-3">
+    <div class="card-header">
+      <h3>Upload High Frequency Data</h3>
+    </div>
+    <form class="card-body" action="" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Submit" class="btn btn-success">
+    </form>
+  </div>
+
+{% endif %}
+
+{% endblock %}

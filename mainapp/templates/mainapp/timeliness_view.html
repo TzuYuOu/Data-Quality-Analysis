@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% include 'mainapp/data_navbar.html' %}
+  <div class="alert alert-warning">
+    Each question has four options:
+    <ul>
+      <li>Yes means your answer is true.</li>
+      <li>No means your answer is false.</li>
+      <li>
+        <strong>"Unknown"</strong> means the question is applicable to the dataset, but the user is not sure of the answer.
+      </li>
+      <li>
+        <strong>"Non Applicable"</strong> means the question is not applicable to the dataset.
+      </li>
+    </ul>
+  </div>
+  
+  <div class="card my-3">
+    <div class="card-header">
+      <h3>{{ action }} Timeliness Form</h3>
+    </div>
+    <form class="card-body" action="" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Submit" class="btn btn-success">
+    </form>
+  </div>
+  
+
+{% endblock %}

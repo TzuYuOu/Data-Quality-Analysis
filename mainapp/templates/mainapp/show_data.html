@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% include 'mainapp/data_navbar.html' %}
+  
+  <h3>Data Overview</h3>
+  {% if correctFormat %}
+    <div class="border p-4 my-3">
+      <div class="row">
+        <div class="col">
+          <p class="h4">Dataset statistics</p>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>
+                  Number of variables
+                </th>
+                <td>
+                  {{ overview.Variables }}
+                </td>
+              </tr>
+              <tr>
+                <th>Number of observations</th>
+                <td>{{ overview.Observations }}</td>
+              </tr>
+              <tr>
+                <th>Number of categorical columns</th>
+                <td>{{ overview.NumCategory }}</td>
+              </tr>
+              <tr>
+                <th>Number of numeric columns</th>
+                <td>{{ overview.NumNumeric }}</td>
+              </tr>
+              <tr>
+                <th>Categorical Nominal variables</th>
+                <td>
+                  {% for v in overview.C_nominal %}
+                    {{ v }}
+                  {% endfor %}
+                </td>
+              </tr>
+              <tr>
+                <th>Categorical Ordinal variables</th>
+                <td>
+                  {% for v in overview.C_ordinal %}
+                    {{ v }}
+                  {% endfor %}
+                </td>
+              </tr>
+              <tr>
+                <th>Numeric Nominal variables</th>
+                <td>
+                  {% for v in overview.I_nominal %}
+                    {{ v }}
+                  {% endfor %}
+                </td>
+              </tr>
+              <tr>
+                <th>Numeric Ordinal variables</th>
+                <td>
+                  {% for v in overview.I_ordinal %}
+                    {{ v }} 
+                  {% endfor %}
+                </td>
+              </tr>
+              <tr>
+                <th>Other variables</th>
+                <td>
+                  {% for v in overview.Other %}
+                    {{ v }}  
+                  {% endfor %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="h4">Missing value ratio of variables</p>
+          {% if overview.var_missing_ratio|length > 0 %}
+            <table class="table">
+              <tbody>
+                {% for key, value in overview.var_missing_ratio.items %}
+                    <tr>
+                      <th>{{ key }}</th>
+                      <td>{{ value | floatformat:3 }}</td>
+                    </tr>
+                {% endfor%}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="px-2">
+              <p>All columns have no missing values.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <h3>Categorical Variables</h3>
+    <div class="border p-4 my-3">
+      <div class="row">
+        {% if cate_variables|length > 0 %}
+          {% for var, item in cate_variables.items %}
+            <div class="col-6 h-100">
+              <p class="h4">{{ var }}</p>
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th>Distinct</th>
+                    <td>{{ item.Distinct }}</td>
+                  </tr>
+                  <tr>
+                    <th>Distinct Ratio (%)</th>
+                    <td>{{ item.Distinct_Ratio | floatformat:1 }}%</td>
+                  </tr>
+                  <tr>
+                    <th>Imbalance Ratio</th>
+                    <td>{{ item.Imbalance_Ratio | floatformat:2}}</td>
+                  </tr>
+                  <tr>
+                    <th>Missing Ratio (%)</th>
+                    <td>{{ item.Missing_Ratio | floatformat:1 }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div>
+                {{ item.Graph | safe }}
+              </div>
+            </div>  
+          {% endfor %}
+        {% else %}
+          <div>
+            <p>This dataset has no categorical variables</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <h3>Numeric Variables</h3>
+    <div>
+      <div class="border p-4 my-3">
+        <div class="row">
+          {% if num_variables|length > 0 %}
+            {% for var, item in num_variables.items %}
+              <div class="col-4">
+                <p class="h4">{{ var }}</p>
+              </div>
+              <div class="col-4">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <th>Mean</th>
+                      <td>{{ item.Mean | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Standard deviation</th>
+                      <td>{{ item.Std | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Minimum</th>
+                      <td>{{ item.Min | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Maximum</th>
+                      <td>{{ item.Max | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Q1</th>
+                      <td>{{ item.1th_quantile | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Median</th>
+                      <td>{{ item.Median | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Q3</th>
+                      <td>{{ item.3rd_quantile | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Kurt</th>
+                      <td>{{ item.Kurt | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Skew</th>
+                      <td>{{ item.Skew | floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                      <th>Missing Ratio (%)</th>
+                      <td>{{ item.Missing_Ratio | floatformat:1 }}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-4">
+                {{ item.Graph | safe}}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div>
+              <p>This dataset has no numeric variables</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% else %}
+  <div class="alert alert-danger">
+    <p>Your data format is not correct !! Please 
+      <a href="{% url 'update-data' data_id %}">Update</a>
+    </p>
+  </div>
+  {% endif %}
+    
+{% endblock %}

@@ -1,0 +1,15 @@
+Column,Attribute
+y,Survived
+problem,classification
+PassengerId,I_nominal
+Survived,I_nominal
+Pclass,I_ordinal
+Name,C_nominal
+Sex,C_nominal
+Age,I_ordinal
+SibSp,I_ordinal
+Parch,I_ordinal
+Ticket,C_nominal
+Fare,I_ordinal
+Cabin,C_nominal
+Embarked,C_nominal

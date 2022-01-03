@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-center my-5">
+  <div class="border rounded p-4">
+    <h3>Are you sure?</h3>
+    <p>Do you really want to delete <strong>"{{ data }}"</strong>? 
+      This process cannot be undone.</p>
+
+    <form action="{% url 'delete-data' data.id %}" method="POST">
+      {% csrf_token %}
+      
+        <a class="btn btn-secondary" href="{% url 'list-data' %}">取消</a>
+        <input class="btn btn-danger" type="submit" name="Confirm" value="確定">
+      
+      
+    </form>
+  </div>
+  
+</div>
+
+{% endblock %}

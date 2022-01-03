@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h3>{{ data }}</h3>
+ 
+  <a class="btn btn-success btn-sm" href="{% url 'transform-hfd' hfd_id %}">Feature Transformation</a>
+
+{% endblock %}
