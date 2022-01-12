@@ -1,18 +1,27 @@
+<style>
+  div.scrollmenu {
+  
+  overflow: auto;
+  white-space: nowrap;
+}
 
-<ul class="nav my-3">
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'show-data' data_id %}">{{ data }} Overview</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'show-indicator' data_id %}">Show Indicator</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'fillout-timeliness' data_id %}">Timeliness Form</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'fillout-security' data_id %}">Security Form</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{% url 'update-data' data_id %}">Update Data</a>
-  </li>
-</ul>
+div.scrollmenu a {
+  display: inline-block;
+  
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: rgb(189, 178, 178);
+}
+</style>
+
+<div class="scrollmenu my-3">
+  <a href="{% url 'show-data' data_id %}">{{ data }} Overview</a>
+  <a href="{% url 'show-indicator' data_id %}">Show Indicator</a>
+  <a href="{% url 'fillout-timeliness' data_id %}">Timeliness Form</a>
+  <a href="{% url 'fillout-security' data_id %}">Security Form</a>
+  <a href="{% url 'update-data' data_id %}">Update Data</a>
+</div>
