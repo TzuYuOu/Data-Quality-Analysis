@@ -10,6 +10,15 @@
         <a class="nav-link" href="/">Home</a>
       </li>
       {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navUpload" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Upload
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navUpload">
+            <a class="dropdown-item" href="{% url 'upload-view' %}">Normal Data</a>
+            <a class="dropdown-item" href="{% url 'upload-hfd' %}">High Frequency Data</a>
+          </div>
+        </li>
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'list-data' %}">Dataset</a>
         </li>
