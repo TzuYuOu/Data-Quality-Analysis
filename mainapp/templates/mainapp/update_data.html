@@ -4,6 +4,23 @@
 
   {% include 'mainapp/data_navbar.html' %}
 
+  <div class="alert alert-warning" >
+    <p>You can update your data here!</p>
+    <p>Please upload the following two CSV files to assess the quality of the data. 
+      If the data is not in the correct format, you may obtain wrong evaluation results.</p>
+    <h4>Raw data</h4>
+    <ul>
+      <li>File should no larger than 2MB and must be CSV format.</li>
+    </ul>
+    <h4>Column data</h4>
+    <ul>
+      <li>File should no larger than 2MB and must be CSV format.</li>
+      <li>Each of columns should fall into one of the following five categories such as I_nominal, I_ordinal, C_nominal, C_ordinal and other.</li>
+      <li>Need to specify which column is your target.</li>
+      <li>Need to specify whether your problem is a regression or a classification.</li>
+    </ul>
+  </div>
+
   <div class="card my-3">
     <div class="card-header">
       <h3>Update Data</h3>

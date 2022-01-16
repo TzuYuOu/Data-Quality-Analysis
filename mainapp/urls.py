@@ -1,3 +1,4 @@
+from unicodedata import name
 from django.urls import path
 from . import views
 
@@ -5,7 +6,9 @@ urlpatterns = [
   path('upload', views.upload_view, name='upload-view'),
   path('upload_hfd', views.upload_hfd, name='upload-hfd'),
   path('update_data/<data_id>', views.update_data, name='update-data'),
+  path('update_hfd/<hfd_id>', views.update_hfd, name='update-hfd'),
   path('delete_data/<data_id>', views.delete_data, name='delete-data'),
+  path('delete_hfd/<hfd_id>', views.delete_hfd, name='delete-hfd'),
   path('list_data', views.list_data, name='list-data'),
   path('show_data/<data_id>', views.show_data, name='show-data'),
   path('show_hfd/<hfd_id>', views.show_hfd, name='show-hfd'),

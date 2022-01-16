@@ -20,6 +20,7 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -28,7 +29,10 @@
             <td>
               {{ data }}
             </td>
-            <td class="text-end">
+            <td>
+              {{ data.datatype }}
+            </td>
+            <td>
               <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
               <a href="{% url 'update-data' data.id%}"><i class="material-icons">&#xE254;</i></a>
               <a href="{% url 'delete-data' data.id%}"><i class="material-icons">delete</i></a>
@@ -69,8 +73,10 @@
             <td>
               {{ data }}
             </td>
-            <td class="text-end">
+            <td >
               <a href="{% url 'show-hfd' data.id %}"><i class="material-icons">description</i></a>
+              <a href="{% url 'update-hfd' data.id%}"><i class="material-icons">&#xE254;</i></a>
+              <a href="{% url 'delete-hfd' data.id%}"><i class="material-icons">delete</i></a>
             </td>
           </tr>
         {% endfor %}
@@ -82,23 +88,4 @@
     {% endif %}
   </div>
 
-
-  {% if hftd_list %}
-    <div>
-      <h3>High Frequency Transformation Dataset</h3>
-      <table class="table table-striped table-hover table-bordered">
-        {% for data in hftd_list %}
-          <tr>
-            <td>
-              {{ data }}
-            </td>
-            <td class="text-end">
-              <a class="btn btn-outline-secondary btn-sm" href="{% url 'show-data' data.id %}">Details</a> 
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-  {% endif %}
-   
 {% endblock %}

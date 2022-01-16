@@ -97,8 +97,57 @@ def update_data(request, data_id):
   return render(request, 'mainapp/update_data.html', context)
 
 @login_required(login_url='/members/login_user')
+def update_hfd(request, hfd_id):
+  data = get_object_or_404(HighFrequencyData, pk=hfd_id, owner=request.user)
+
+  form = HighFrequencyDataForm(request.POST or None, instance=data)
+
+  if request.method == "POST":
+    old_rawdata = data.rawdata
+    old_config = data.config
+
+    if 'rawdata' in request.FILES.keys():
+      data.rawdata = request.FILES['rawdata']
+    if 'config' in request.FILES.keys():
+      data.config = request.FILES['config']
+
+    form = HighFrequencyDataForm(request.POST, instance=data)
+    if form.is_valid():
+      if(os.path.exists(old_rawdata.path)):
+        os.remove(old_rawdata.path)
+
+      if(os.path.exists(old_config.path)):
+        os.remove(old_config.path)
+      
+      form.save()
+      return redirect('show-hfd', hfd_id)
+    else:
+      print('form is invalid')
+  
+  context = {
+    'data': data,
+    'hfd_id': hfd_id,
+    'form': form
+  }
+
+  return render(request, 'mainapp/update_hfd.html', context)
+
+@login_required(login_url='/members/login_user')
 def delete_data(request, data_id):
   data = get_object_or_404(Data, pk=data_id, owner=request.user)
+
+  if request.method == "POST":
+    data.delete()
+    return redirect('list-data')
+
+  context = {
+    'data': data
+  }
+  return render(request, 'mainapp/delete_data.html', context)
+
+@login_required(login_url='/members/login_user')
+def delete_hfd(request, hfd_id):
+  data = get_object_or_404(HighFrequencyData, pk=hfd_id, owner=request.user)
 
   if request.method == "POST":
     data.delete()
@@ -168,12 +217,10 @@ def list_data(request):
   user = request.user
   data_list = Data.objects.filter(owner=user, datatype='normal')
   hfd_list = HighFrequencyData.objects.filter(owner=user)
-  hftd_list = Data.objects.filter(owner=user, datatype='freq')
-
+  
   context = {
     'data_list': data_list,
     'hfd_list': hfd_list,
-    'hftd_list': hftd_list,
   }
 
   return render(request, 'mainapp/data_list.html', context)
@@ -404,9 +451,12 @@ def show_data(request, data_id):
 @login_required(login_url='/members/login_user')
 def show_hfd(request, hfd_id):
   data = get_object_or_404(HighFrequencyData, pk=hfd_id, owner=request.user)
+  transdata_list = data.transData.all()
+
   context = {
     'data': data,
-    'hfd_id': hfd_id
+    'hfd_id': hfd_id,
+    'transdata_list': transdata_list
   }
   return render(request, 'mainapp/show_hfd.html', context)
 

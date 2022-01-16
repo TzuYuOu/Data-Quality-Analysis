@@ -65,10 +65,13 @@
   {% include 'mainapp/data_navbar.html' %}
   
   {% if correctFormat %}
-    <div class="my-3 d-flex">
-      <h3>Indicator</h3>
-      <div class="ms-auto">
-        <a class="btn btn-success btn-sm" href="{% url 'recalculate-indicator' data_id %}">Recalculate Indicator</a>
+    <div class="row">
+      <div class="col-6">
+        <h3>Indicator Chart</h3>
+      </div>
+      <div class="col-6 text-end">
+        You can click to recalculate score
+        <a href="{% url 'recalculate-indicator' data_id %}" class="btn btn-success"><i class="material-icons">autorenew</i></a>
       </div>
     </div>
     
