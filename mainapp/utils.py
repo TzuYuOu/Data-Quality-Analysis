@@ -205,7 +205,7 @@ class Completeness:
             data = self.change_to_dummy_variable()
             # data = self.change_to_label_variable()
         
-        if cate != 'category':
+        if cate != 'classification':
             
             y = data[[y_column_name]]
             x_columns = data.drop(y_column_name, axis=1)

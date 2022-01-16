@@ -16,6 +16,7 @@ import plotly.graph_objs as go
 
 from .freq_trans import Feature_all
 import json
+from datetime import datetime
 
 # Create your views here.
 @login_required(login_url='/members/login_user')
@@ -156,7 +157,7 @@ def delete_hfd(request, hfd_id):
   context = {
     'data': data
   }
-  return render(request, 'mainapp/delete_data.html', context)
+  return render(request, 'mainapp/delete_hfd.html', context)
 
 @login_required(login_url='/members/login_user')  
 def fillout_security(request, data_id):
@@ -215,7 +216,7 @@ def fillout_timeliness(request, data_id):
 @login_required(login_url='/members/login_user')
 def list_data(request):
   user = request.user
-  data_list = Data.objects.filter(owner=user, datatype='normal')
+  data_list = Data.objects.filter(owner=user)
   hfd_list = HighFrequencyData.objects.filter(owner=user)
   
   context = {
@@ -278,7 +279,7 @@ def show_indicator(request, data_id):
       # get completeness indicator
       comp_score = get_completeness_score(raw_df, column_dict)
       comp_score = int(comp_score*100)
-
+      
       indicator = Indicator.objects.create(
                     name=data, 
                     completeness=comp_score,
@@ -358,7 +359,7 @@ def recalculate_indicator(request, data_id):
 
   # get infomation content dict
   infoContent = get_infoContent(raw_df, column_dict)
-
+  
   # get completeness indicator
   comp_score = get_completeness_score(raw_df, column_dict)
   comp_score = int(comp_score*100)
@@ -375,20 +376,35 @@ def recalculate_indicator(request, data_id):
 def transform_hfd(request, hfd_id):
   hfd = get_object_or_404(HighFrequencyData, pk=hfd_id, owner=request.user)
 
+  # Load raw data and config
   df = pd.read_csv(hfd.rawdata)
-  
   config = json.loads(hfd.config.read())
   
-  f_all = Feature_all(df, config['windowSize'], config['target_xs'], config['samplingFrequency'])
-
+  # Data Transformation
+  f_all = Feature_all(df, config['windowSize'], config['target_xs'], config['target_y'], config['samplingFrequency'])
   rawdata_file = ContentFile(f_all.to_csv(index=False))
-  rawdata_file.name = f"{hfd.name}_Transformation.csv"
+  current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+  rawdata_file.name = f"{hfd.name}_Trans_{current_time}.csv"
 
+  # Create attribute data
+  cols = ['y', 'problem']
+  col_attrs = [ config['target_y'][0], config['problem']]
+  cols.extend(f_all.columns)
+  col_attrs.extend([ 'I_ordinal' for _ in range(len(f_all.columns))])
+  data = {
+      'Column': cols,
+      'Attribute': col_attrs
+  }
+  attribute_df = pd.DataFrame(data)
+  attribute_file = ContentFile(attribute_df.to_csv(index=False))
+  attribute_file.name = f"{hfd.name}_Trans_{current_time}_column.csv"
+
+  # Save transformated data and column attribute
   data = Data.objects.create(
-    name = hfd.name+" Transformation",
+    name = f"{hfd.name}_Trans_{current_time}",
     owner = request.user,
     rawdata = rawdata_file,
-    attribute_data = rawdata_file,
+    attribute_data = attribute_file,
     datatype = 'freq',
     questiontype=config['problem']
   )
@@ -569,7 +585,7 @@ def get_infoContent(data, column_dict):
 
       result['total_score'] =  total_score
       result['var_score'] = None
-
+    
     return result
 
 def get_security(data):

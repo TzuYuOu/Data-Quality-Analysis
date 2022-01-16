@@ -32,11 +32,18 @@
             <td>
               {{ data.datatype }}
             </td>
-            <td>
-              <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
-              <a href="{% url 'update-data' data.id%}"><i class="material-icons">&#xE254;</i></a>
-              <a href="{% url 'delete-data' data.id%}"><i class="material-icons">delete</i></a>
-            </td>
+            {% if data.datatype == 'normal' %}
+              <td>
+                <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
+                <a href="{% url 'update-data' data.id%}"><i class="material-icons">&#xE254;</i></a>
+                <a href="{% url 'delete-data' data.id%}"><i class="material-icons">delete</i></a>
+              </td>
+            {% else %}
+              <td>
+                <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
+                <a href="{% url 'delete-data' data.id%}"><i class="material-icons">delete</i></a>
+              </td>
+            {% endif %}
           </tr>
         {% endfor %}
       </table>

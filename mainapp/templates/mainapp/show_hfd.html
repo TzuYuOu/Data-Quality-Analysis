@@ -2,11 +2,11 @@
 
 {% block content %}
 
-  <h3>{{ data }}</h3>
- 
-  <a class="btn btn-success btn-sm" href="{% url 'transform-hfd' hfd_id %}">Feature Transformation</a>
-
-
+  
+  <div class="my-3">
+    <h3>Dataset: {{ data }}</h3>
+  </div>
+  
   <div class="my-3">
     <!-- table title -->
     <div class="bg-secondary text-white p-4">
@@ -23,6 +23,7 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -31,8 +32,12 @@
             <td>
               {{ data }}
             </td>
-            <td class="text-end">
-              <a class="btn btn-outline-secondary btn-sm" href="{% url 'show-data' data.id %}">Details</a> 
+            <td>
+              {{ data.datatype }}
+            </td>
+            <td>
+              <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
+              <a href="{% url 'delete-data' data.id%}"><i class="material-icons">delete</i></a>
             </td>
           </tr>
         {% endfor %}
