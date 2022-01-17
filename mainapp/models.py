@@ -33,6 +33,7 @@ class Data(models.Model):
   attribute_data = models.FileField(upload_to='attribute/', validators=[file_size, validate_file_extension])
   datatype = models.CharField(max_length=10, choices=datatype_choices, default='normal')
   questiontype = models.CharField(max_length=15, choices=question_choices, default='classification')
+  freq_config = models.JSONField(null=True, blank=True)
 
   def __str__(self):
       return self.name

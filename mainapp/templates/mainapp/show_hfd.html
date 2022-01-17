@@ -23,7 +23,9 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Type</th>
+            <th>Window Size</th>
+            <th>Sampling Frequency</th>
+            <th>Use Filter</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -33,7 +35,13 @@
               {{ data }}
             </td>
             <td>
-              {{ data.datatype }}
+              {{ data.freq_config.windowSize}}
+            </td>
+            <td>
+              {{ data.freq_config.samplingFrequency}}
+            </td>
+            <td>
+              {{ data.freq_config.usedFilter}}
             </td>
             <td>
               <a href="{% url 'show-data' data.id %}"><i class="material-icons">description</i></a>
