@@ -4,6 +4,7 @@ import statsmodels.api as sm
 from sklearn.preprocessing import LabelEncoder # transform to 0/1/2
 from scipy import stats #pointbiserialr
 from sklearn.metrics import matthews_corrcoef
+from sklearn.linear_model  import LogisticRegression
 from sklearn import tree, metrics
 from statsmodels.stats.weightstats import ztest
 from imblearn.under_sampling import RandomUnderSampler
@@ -15,18 +16,18 @@ from plotly.offline import plot
 import plotly.graph_objs as go
 
 class Accuracy:
-    def __init__(self, data, column_dict):
+    def __init__(self, data, sample_dict):
         self.data = data
-        self.column_dict = column_dict
+        self.sample_dict = sample_dict
     
     def get_data(self):
         return self.data
 
     def coef(self):
         data = self.get_data()
-        y_column_name = self.column_dict['y']
-        tpe = self.column_dict[self.column_dict['y']].split('_')[1]
-        cate= self.column_dict['problem']
+        y_column_name = self.sample_dict['y']
+        tpe = self.sample_dict[self.sample_dict['y']].split('_')[1]
+        cate= self.sample_dict['problem']
 
         if len(data.dtypes[data.dtypes == 'object']) != 0:
             # data = self.change_to_dummy_variable()
@@ -45,7 +46,7 @@ class Accuracy:
         for i in range(len(x.columns)):
             one_x = x[x.columns[i]]
             temp = pd.concat([one_x, y], axis=1)
-            Type = self.column_dict[x.columns[i]].split('_')[1]
+            Type = self.sample_dict[x.columns[i]].split('_')[1]
             if Type == 'ordinal' and cate=='regression': # x Continuous and y continuous
                 correlation = temp.corr(method='pearson').iloc[1,0]
                 
@@ -55,16 +56,21 @@ class Accuracy:
             elif Type == 'nominal' and cate=='regression': # x not Continuous and y continuous
                 correlation = stats.pointbiserialr(one_x, y)[0]
             
-            elif Type == 'nominal' and cate=='category': # x not Continuous and y not continuous(nominal)
+            elif Type == 'nominal' and cate=='classification': # x not Continuous and y not continuous(nominal)
                 correlation = matthews_corrcoef(one_x, y) # phi-correlation
             
             else: # x Continuous and y not continuous
                 correlation = stats.pointbiserialr(np.squeeze(y), one_x)[0]
             
             normalize_one_x = (one_x-one_x.min())/(one_x.max()-one_x.min())
-            model_ols = sm.OLS(y, normalize_one_x)
-            results = model_ols.fit()
-            coef = results.params.values[0]
+            if cate=='classification':
+                lr=LogisticRegression(fit_intercept=True)
+                lr.fit(normalize_one_x.values.reshape(-1,1), y)
+                coef = lr.coef_[0][0]
+            else:
+                model_ols = sm.OLS(y, normalize_one_x)
+                results = model_ols.fit()
+                coef = results.params.values[0]
             save_beta[x.columns[i]] = coef
             
             if np.sign(coef*correlation) == 1:
@@ -74,11 +80,7 @@ class Accuracy:
             
             save_result[x.columns[i]] = Accuracy_Score
         
-        res = {
-            'acc_res': save_result,
-            'acc_beta': save_beta
-        }
-        return res
+        return save_result, save_beta
     
     def change_to_label_variable(self):
         data = self.get_data()
