@@ -12,4 +12,4 @@ Parch,I_ordinal
 Ticket,C_nominal
 Fare,I_ordinal
 Cabin,C_nominal
-Embarked,C_nominal
+Embarked,C_ordinal

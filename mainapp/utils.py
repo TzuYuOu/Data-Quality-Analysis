@@ -63,9 +63,12 @@ class Accuracy:
                 correlation = stats.pointbiserialr(np.squeeze(y), one_x)[0]
             
             normalize_one_x = (one_x-one_x.min())/(one_x.max()-one_x.min())
+            
             if cate=='classification':
+                normalize_one_x = normalize_one_x.values.reshape(-1,1)
                 lr=LogisticRegression(fit_intercept=True)
-                lr.fit(normalize_one_x.values.reshape(-1,1), y)
+                lr.fit(normalize_one_x, y.values.ravel())
+                
                 coef = lr.coef_[0][0]
             else:
                 model_ols = sm.OLS(y, normalize_one_x)
@@ -80,7 +83,11 @@ class Accuracy:
             
             save_result[x.columns[i]] = Accuracy_Score
         
-        return save_result, save_beta
+        res = {}
+        res['acc_res'] = save_result
+        res['acc_beta'] = save_beta
+
+        return res
     
     def change_to_label_variable(self):
         data = self.get_data()
@@ -135,17 +142,18 @@ class InfoContent:
         gain_ratio = self.cal_gain_ratio(x, y)
 
         # calculate upper bound
-        new_col = [1 for _ in range(len(data[x]))]
-        new_col[-1] = 0
-        data['New_Col'] = new_col
-        upper_bound = self.cal_gain_ratio('New_Col', y)
+        # new_col = [1 for _ in range(len(data[x]))]
+        # new_col[-1] = 0
+        # data['New_Col'] = new_col
+        # upper_bound = self.cal_gain_ratio('New_Col', y)
 
-        if((gain_ratio / upper_bound) >= 1):
-            score = 1
-        else:
-            score = 1-(gain_ratio/upper_bound)
+        # if((gain_ratio / upper_bound) >= 1):
+        #     score = 1
+        # else:
+        #     score = 1-(gain_ratio/upper_bound)
 
-        return int(100 * score)
+        # return int(100 * score)
+        return int(100 * gain_ratio)
 
     def get_gain_ratio(self):
         res = {}
@@ -237,6 +245,7 @@ class Completeness:
             data = self.check_data_imbalanced(data, y_column_name)
             
             y = data[[y_column_name]]
+            
             x_columns = data.drop(y_column_name, axis=1)
         
             acc_h0 = []

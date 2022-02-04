@@ -544,6 +544,7 @@ def get_accuracy(data, column_dict):
     total = 0
     same_dir_cnt = 0
     opposite_var = {}
+    
     for key, value in res['acc_res'].items():
       total += 1
       if value == 1:
@@ -712,5 +713,11 @@ def get_timeliness(data):
 
 def get_completeness_score(data, column_dict):
     comp = Completeness(data, column_dict)
+
+    # try:
+    #   mece_score = comp.mece()
+    # except:
+    #   mece_score = -1
     mece_score = comp.mece()
+    
     return mece_score
