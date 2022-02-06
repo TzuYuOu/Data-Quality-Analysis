@@ -177,14 +177,18 @@ class InfoContent:
         res = {}
 
         for col in self.data.columns:
-            if(col != self.y and self.column_dict[col] == 'I_ordinal'):
+            if(col != self.y and self.column_dict[col] == 'I_ordinal' or self.column_dict[col] == 'I_nominal'):
                 samples_var = []
                 # random sample 30 times
                 for _ in range(30):
                     s = np.random.uniform(min(self.data[col]), max(self.data[col]), len(self.data))
                     samples_var.append(np.var(s))
 
-                var_ratio = np.var(self.data[col]) / np.mean(samples_var)
+                if np.mean(samples_var) <= 0:
+                    var_ratio = 0
+                else:
+                    var_ratio = np.var(self.data[col]) / np.mean(samples_var)
+
                 if var_ratio >= 1:
                     res[col] = 100
                 else:
@@ -233,13 +237,13 @@ class Completeness:
                 rs_h1.append(results_h1.rsquared)
             z_test = ztest(rs_h0, rs_h1)
                 
-            if z_test[1] >= 0.05:
+            if z_test[1] <= 0.05:
                 mean0 = sum(rs_h0) / len(rs_h0)
                 mean1 = sum(rs_h1) / len(rs_h1)
                 mece_score = mean0 / mean1
                 return mece_score
             else:
-                mece_score = 0
+                mece_score = 1
                 return mece_score
         else:
             data = self.check_data_imbalanced(data, y_column_name)
@@ -264,12 +268,12 @@ class Completeness:
             mece_score = 1
         else:
             z_test = ztest(acc_h0, acc_h1)
-            if z_test[1] >= 0.05:
+            if z_test[1] <= 0.05:
                 mean0 = sum(acc_h0) / len(acc_h0)
                 mean1 = sum(acc_h1) / len(acc_h1)
                 mece_score = mean0 / mean1
             else:
-                mece_score = 0
+                mece_score = 1
         return mece_score
     
     def change_to_label_variable(self):
@@ -306,7 +310,7 @@ class Completeness:
             
             temp = pd.DataFrame(data.groupby(y_column_name).count().iloc[:,0])
             temp['size'] = temp.iloc[:,0] / temp.iloc[:,0].min()
-            temp['target_value'] = np.where(temp['size'] > 10, temp.iloc[:,0]*10, temp.iloc[:,0])
+            temp['target_value'] = np.where(temp['size'] > 10, temp.iloc[:,0].min()*10, temp.iloc[:,0])
             num_class = temp['target_value'].to_dict()
             rus = RandomUnderSampler(sampling_strategy=num_class, random_state=0)
             down_X, down_y = rus.fit_resample(x_columns, y)

@@ -13,4 +13,4 @@ pH,I_ordinal
 sulphates,I_ordinal
 alcohol,I_ordinal
 quality,I_ordinal
-Id,I_ordinal
+Id,other

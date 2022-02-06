@@ -277,7 +277,22 @@
               {% endif %}
             </div>
             <!-- Information Content suggestion -->
-            <div class="tab-pane fade" id="list-information" role="tabpanel" aria-labelledby="list-information-list">...</div>
+            <div class="tab-pane fade" id="list-information" role="tabpanel" aria-labelledby="list-information-list">
+              {% if info_warning %}
+                <div>
+                  <p class="text-danger">
+                    The value in  
+                    {% for col, _ in info_warning.items %}
+                      <strong>"{{ col }}",</strong>  
+                    {% endfor %}
+                    are too single!
+                  </p>
+                </div>
+              {% else %}
+                ...
+              {% endif %}
+            </div>
+            
             <!-- Security suggestion -->
             <div class="tab-pane fade" id="list-security" role="tabpanel" aria-labelledby="list-security-list"> 
               {% if sec_finished %}

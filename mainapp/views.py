@@ -300,6 +300,13 @@ def show_indicator(request, data_id):
     # indicator scores
     indicator_scores = [acc_dict['score'] , comp_score, int(infoContent['total_score']), security_dict['score'], timeliness_dict['score']]
 
+    # infoContent warning
+    infoWarning = {}
+    for key, value in infoContent['var_score'].items():
+      if value <= 0:
+        infoWarning[key] = value
+
+
     context = {
       'data': data,
       'data_id': data_id,
@@ -317,6 +324,7 @@ def show_indicator(request, data_id):
       'comp_score': comp_score,
       'gainRatio': infoContent['gain_ratio'],
       'var_score': infoContent['var_score'],
+      'info_warning': infoWarning,
       'indicator_scores': indicator_scores,
       'summary': summary_dict,
       'correctFormat': correctFormat
@@ -548,30 +556,38 @@ def get_accuracy(data, column_dict):
     res = {}
 
     aa = Accuracy(data, column_dict)
-    res = aa.coef()
+    try:
+      res = aa.coef()
 
-    total = 0
-    same_dir_cnt = 0
-    opposite_var = {}
-    
-    for key, value in res['acc_res'].items():
-      total += 1
-      if value == 1:
-        same_dir_cnt += 1
-      else:
-        opposite_var[key] = res['acc_beta'][key]
+      total = 0
+      same_dir_cnt = 0
+      opposite_var = {}
+      
+      for key, value in res['acc_res'].items():
+        total += 1
+        if value == 1:
+          same_dir_cnt += 1
+        else:
+          opposite_var[key] = res['acc_beta'][key]
 
-    # calcualte accuray score
-    score = int(100*(same_dir_cnt / total))
+      # calcualte accuray score
+      score = int(100*(same_dir_cnt / total))
 
-    # sort by value to descending order
-    opposite_var_warning = dict(sorted(opposite_var.items(), key=lambda item: item[1], reverse=True))
-    # var_beta = [ f'{key}({value:.2f})' for key, value in opposite_var.items() ]
-    # opposite_var_warning = '>'.join(var_beta)
-    
-    res['score'] = score
-    res['detail'] = f'{same_dir_cnt}/{total}'
-    res['opposite_var_warning'] = opposite_var_warning
+      # sort by value to descending order
+      opposite_var_warning = dict(sorted(opposite_var.items(), key=lambda item: item[1], reverse=True))
+      # var_beta = [ f'{key}({value:.2f})' for key, value in opposite_var.items() ]
+      # opposite_var_warning = '>'.join(var_beta)
+      
+      res['score'] = score
+      res['detail'] = f'{same_dir_cnt}/{total}'
+      res['opposite_var_warning'] = opposite_var_warning
+
+    except:
+      res['score'] = 0
+      res['acc_res'] = {}
+      res['acc_beta'] = {}
+      res['detail'] = f'0/0'
+      res['opposite_var_warning'] = {}
 
     return res
 
@@ -594,7 +610,7 @@ def get_infoContent(data, column_dict):
           total_score += v / len(result['gain_ratio'])
 
       result['total_score'] =  total_score
-      result['var_score'] = None
+      result['var_score'] = {}
     
     return result
 
