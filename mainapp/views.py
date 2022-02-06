@@ -399,6 +399,14 @@ def transform_hfd(request, hfd_id):
   attribute_file = ContentFile(attribute_df.to_csv(index=False))
   attribute_file.name = f"{hfd.name}_Trans_{current_time}_column.csv"
 
+  # config
+  freq_config = {
+    "samplingFrequency": config["samplingFrequency"],
+    "windowSize": config["windowSize"],
+    "usedFilter": config["usedFilter"]
+  }
+
+
   # Save transformated data and column attribute
   data = Data.objects.create(
     name = f"{hfd.name}_Trans_{current_time}",
@@ -406,7 +414,8 @@ def transform_hfd(request, hfd_id):
     rawdata = rawdata_file,
     attribute_data = attribute_file,
     datatype = 'freq',
-    questiontype=config['problem']
+    questiontype=config['problem'],
+    freq_config=freq_config
   )
   data.save()
 

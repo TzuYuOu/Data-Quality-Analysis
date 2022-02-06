@@ -1,0 +1,25 @@
+Column,Attribute
+y,fetal_health
+problem,classification
+baseline value,I_ordinal
+accelerations,I_ordinal
+fetal_movement,I_ordinal
+uterine_contractions,I_ordinal
+light_decelerations,I_ordinal
+severe_decelerations,I_ordinal
+prolongued_decelerations,I_ordinal
+abnormal_short_term_variability,I_ordinal
+mean_value_of_short_term_variability,I_ordinal
+percentage_of_time_with_abnormal_long_term_variability,I_ordinal
+mean_value_of_long_term_variability,I_ordinal
+histogram_width,I_ordinal
+histogram_min,I_ordinal
+histogram_max,I_ordinal
+histogram_number_of_peaks,I_ordinal
+histogram_number_of_zeroes,I_ordinal
+histogram_mode,I_ordinal
+histogram_mean,I_ordinal
+histogram_median,I_ordinal
+histogram_variance,I_ordinal
+histogram_tendency,I_ordinal
+fetal_health,I_nominal

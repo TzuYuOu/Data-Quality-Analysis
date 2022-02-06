@@ -1,0 +1,8 @@
+{
+  "problem": "regression",
+  "target_y": ["RUL"],
+  "target_xs": ["mm"],
+  "usedFilter": false,
+  "windowSize": 10,
+  "samplingFrequency": 10
+}
