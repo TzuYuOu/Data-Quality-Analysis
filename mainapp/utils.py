@@ -480,17 +480,22 @@ class Overview:
         missing_ratio_alarm = {}
         for name in self.column_withmiss:
             if self.column_missing_ratio[name] > missing_ratio_threshold:
-                missing_ratio_alarm[name] = self.column_missing_ratio[name]
+                missing_ratio_alarm[name] = self.column_missing_ratio[name]*100
         
         # check data imbalance
-        variable_cate = self.C_nominal + self.C_ordinal
+        variable_cate = self.C_nominal + self.C_ordinal + self.I_ordinal
         imbalance_cate = {}
         for key in variable_cate:
-            all_cate_ratio = list(self.data[key].value_counts() / sum(self.data[key].value_counts()))
+            data_without_na = self.data_old[key].dropna()
+            all_cate_ratio = list(data_without_na.value_counts() / sum(data_without_na.value_counts()))
             imbalance_ratio = max(all_cate_ratio) / min(all_cate_ratio)
+            # all_cate_ratio = list(self.data[key].value_counts() / sum(self.data[key].value_counts()))
+            # print(all_cate_ratio)
+            # imbalance_ratio = max(all_cate_ratio) / min(all_cate_ratio)
             if imbalance_ratio > 10:
                 imbalance_cate.setdefault(key, imbalance_ratio)
-
+        imbalance_cate = {k: v for k, v in sorted(imbalance_cate.items(), key=lambda item: item[1], reverse=True)}
+       
         summary = {
             "missing_ratio_alarm": missing_ratio_alarm,
             'Imbalance_Alarm': imbalance_cate

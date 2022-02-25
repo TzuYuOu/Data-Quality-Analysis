@@ -212,14 +212,14 @@
             <!-- Data suggestion -->
             <div class="tab-pane fade show active " id="list-data" role="tabpanel" aria-labelledby="list-data-list">
               {% if summary.missing_ratio_alarm %}
-                <strong>More than 10% of the data is missing in the columns</strong> 
+                <strong class="text-danger">More than 10% of the data is missing in the columns</strong> 
                 <div class="p-4">
                   <table class="table">
                     <tbody>
                       {% for var, ratio in summary.missing_ratio_alarm.items %}
                       <tr>
                         <th>{{ var }}</th>
-                        <td>{{ ratio|floatformat:2 }}</td>
+                        <td>{{ ratio|floatformat:1 }}%</td>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -230,14 +230,14 @@
               {% endif %}
                 
               {% if summary.Imbalance_Alarm %}
-                <strong>There are data imbalance problems in the columns:</strong>
+                <strong class="text-danger">There are data imbalance problems in the columns:</strong>
                 <div class="p-4">
                   <table class="table">
                     <tbody>
                       {% for var, ratio in summary.Imbalance_Alarm.items %}
                         <tr>
                           <th>{{ var }}</th>
-                          <td>{{ ratio|floatformat:2 }}</td>
+                          <td>{{ ratio |floatformat:1 }}</td>
                         </tr>
                       {% endfor %}
                     </tbody>
