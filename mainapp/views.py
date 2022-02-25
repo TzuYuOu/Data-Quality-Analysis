@@ -611,6 +611,9 @@ def get_infoContent(data, column_dict):
 
       result['total_score'] =  total_score
       result['var_score'] = {}
+
+    else:
+      raise ValueError("Problem's category must be classification or regression.")
     
     return result
 
@@ -743,6 +746,7 @@ def get_completeness_score(data, column_dict):
     #   mece_score = comp.mece()
     # except:
     #   mece_score = -1
-    mece_score = comp.mece()
-    
+    mece_score, rs_history = comp.mece()
+    print(rs_history.keys())
+
     return mece_score

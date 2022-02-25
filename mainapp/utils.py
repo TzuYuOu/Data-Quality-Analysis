@@ -226,6 +226,7 @@ class Completeness:
             
             rs_h0 = []
             rs_h1 = []
+            rs_history = pd.DataFrame(columns = ['R2' , 'random'])
             for i in range(30):
                 model_h0 = sm.OLS(y, x_columns)
                 results_h0 = model_h0.fit()
@@ -235,16 +236,19 @@ class Completeness:
                 model_h1 = sm.OLS(y,x_columns)
                 results_h1 = model_h1.fit()
                 rs_h1.append(results_h1.rsquared)
+                rs_history.loc[i] = [results_h1.rsquared, x_columns['rand']]
+                    
             z_test = ztest(rs_h0, rs_h1)
-                
+            rs_history = rs_history.sort_values(by=['R2'], ascending=False)[0:3]
+            
             if z_test[1] <= 0.05:
                 mean0 = sum(rs_h0) / len(rs_h0)
                 mean1 = sum(rs_h1) / len(rs_h1)
                 mece_score = mean0 / mean1
-                return mece_score
+                return mece_score, rs_history.random.to_dict()
             else:
                 mece_score = 1
-                return mece_score
+                return mece_score, rs_history.random.to_dict()
         else:
             data = self.check_data_imbalanced(data, y_column_name)
             
@@ -254,6 +258,7 @@ class Completeness:
         
             acc_h0 = []
             acc_h1 = []
+            # acc_history = pd.DataFrame(columns = ['acc' , 'random'])
             for i in range(30):
                 model_h0 = tree.DecisionTreeClassifier()
                 results_h0 = model_h0.fit(x_columns, y)
@@ -263,18 +268,22 @@ class Completeness:
                 model_h1 = tree.DecisionTreeClassifier()
                 results_h1 = model_h1.fit(x_columns, y)
                 acc_h1.append(metrics.accuracy_score(y, model_h1.predict(x_columns)))
+                # acc_history.loc[i] = [metrics.accuracy_score(y, model_h1.predict(x_columns)), x_columns['rand']]
                 
         if acc_h0 == acc_h1:
             mece_score = 1
+            # acc_history = acc_history.sort_values(by=['acc'], ascending=False)[0:3]
         else:
             z_test = ztest(acc_h0, acc_h1)
+            # acc_history = acc_history.sort_values(by=['acc'], ascending=False)[0:3]
+            
             if z_test[1] <= 0.05:
                 mean0 = sum(acc_h0) / len(acc_h0)
                 mean1 = sum(acc_h1) / len(acc_h1)
                 mece_score = mean0 / mean1
             else:
                 mece_score = 1
-        return mece_score
+        return mece_score, {}
     
     def change_to_label_variable(self):
         data = self.get_data()
@@ -320,6 +329,30 @@ class Completeness:
             
         return new_data
     
+    def overview(self,data):
+        self.overview_num = data.describe()
+        self.overview_cat = data.describe(include=['O'])
+        plt.style.use("seaborn")
+        fig, axes = plt.subplots(len(self.overview_cat.columns),1)
+        fig.subplots_adjust(wspace=0.5, hspace=0.5)
+        for i in range(len(self.overview_cat.columns)):
+            columns = self.overview_cat.columns
+            axes[i].bar(data[columns[i]].unique(), data[columns[i]].value_counts(), width = 0.5)
+            for j, k in enumerate(data[columns[i]].value_counts()):
+                axes[i].text(j, k, str(k), fontweight="bold")
+        
+    def null_count(self, data):
+        result_null = {}
+        all_columns = data.columns
+        all_null = 0
+        for i in range(len(all_columns)):
+            null_counts = data[all_columns[i]].isnull().sum()
+            result_null[all_columns[i]] = null_counts
+            all_null += null_counts
+        self.null_score = 1 - (all_null / data.size)
+        self.result = result_null
+        return self.result
+
 class Overview:
     def __init__(self, data, column_dict):
         self.data_old = data
