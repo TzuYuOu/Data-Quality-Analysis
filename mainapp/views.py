@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, FileResponse
+from django.http import HttpResponseRedirect, FileResponse, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
@@ -340,6 +340,28 @@ def show_indicator(request, data_id):
     }
 
   return render(request, 'mainapp/show_indicator.html', context)
+
+def download_used_data(request, data_id):
+  data = Data.objects.get(pk=data_id, owner=request.user)
+  
+  # read data and attribute data
+  raw_df = pd.read_csv(data.rawdata)
+  column_df = pd.read_csv(data.attribute_data)
+
+  column_dict = {}
+  for _, row in column_df.iterrows():
+    column_dict[row['Column']] = row['Attribute']
+
+  # delete other type column
+  raw_df, _ = handle_other_type(raw_df, column_dict)
+  # remove missing value
+  raw_df = remove_missing_value(raw_df)
+  
+  response = HttpResponse(content_type='text/csv')
+  response['Content-Disposition'] = 'attachment; filename=data-used-in-inicator.csv'
+  raw_df.to_csv(response, index=False)
+
+  return response
 
 @login_required(login_url='/members/login_user')
 def recalculate_indicator(request, data_id):

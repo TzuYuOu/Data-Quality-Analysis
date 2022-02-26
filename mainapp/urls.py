@@ -17,6 +17,7 @@ urlpatterns = [
   path('fillout_security/<data_id>', views.fillout_security, name='fillout-security'),
   path('download_rawdata', views.download_rawdata, name='download-rawdata'),
   path('download_attrdata', views.download_attrdata, name='download-attrdata'),
+  path('download_used_data/<data_id>', views.download_used_data, name='download-used-data'),
   path('recalculate_indicator/<data_id>', views.recalculate_indicator, name='recalculate-indicator'),
   path('transform_hfd/<hfd_id>', views.transform_hfd, name='transform-hfd'),
 ]

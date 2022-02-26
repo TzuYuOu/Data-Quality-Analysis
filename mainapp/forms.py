@@ -6,13 +6,13 @@ from .models import Data, SecurityIndicator, TimelinessIndicator, HighFrequencyD
 class DataForm(ModelForm):
   class Meta:
     model = Data
-    fields = ['name', 'owner', 'rawdata', 'attribute_data']
+    fields = ['name', 'owner', 'rawdata', 'attribute_data', 'datatype']
     labels = {
       'name': 'Dataset Name',
       'owner': 'Owner Id',
       'rawdata': 'Raw Data (Upload file must be smaller than 2MB and only accept csv format)', 
       'attribute_data': 'Column data (Upload file must be smaller than 2MB and only accept csv format)', 
-      # 'datatype': 'Data Type', 
+      'datatype': 'Data Type', 
       # 'questiontype': 'Question Type'
     }
     widgets = {
@@ -20,7 +20,7 @@ class DataForm(ModelForm):
       'owner': forms.TextInput(attrs={'class': 'form-control', 'readonly': True}),
       'rawdata': forms.FileInput(attrs={'class': 'form-control'}),
       'attribute_data': forms.FileInput(attrs={'class': 'form-control'}),
-      # 'datatype': forms.Select(attrs={'class': 'form-select'}),
+      'datatype': forms.Select(attrs={'class': 'form-select'}),
       # 'questiontype': forms.Select(attrs={'class': 'form-select'}),
     }
 
