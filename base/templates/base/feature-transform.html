@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load static %}
 <div class="p-5 mb-4 bg-light rounded-3">
   <div class="container-fluid py-5">
     <h1 class="display-5 fw-bold">High Frquency Data Feature Transformation module</h1>
@@ -17,4 +18,120 @@
   </div>
 </div>
 
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>1. 點擊執行檔</h3>
+    <div class="px-4">
+      <p>You need to upload two CSV files and follow our format.</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step1.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>2. 輸入資料夾路徑</h3>
+    <div class="px-4">
+      <p>出現左列文字，輸入檔案所在的資料夾路徑
+        (e.g. C:\Users\Desktop\Filename)</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step2.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>3. 輸入檔案名稱</h3>
+    <div class="px-4">
+      <p>輸入檔案名稱
+        (e.g. accelerometer.csv)</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step3.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>4. 使用濾波器</h3>
+    <div class="px-4">
+      <p>讀取檔案後會將檔案內含的欄位印出，
+        接著選擇是否使用濾波器，輸入y代表使用，輸入n代表不使用</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step4.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>5. 選擇轉換的特徵</h3>
+    <div class="px-4">
+      <p>選擇要轉換的特徵，freq代表頻域，
+        time代表時域，both代表兩者都要</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step5.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>6. 輸入轉換欄位</h3>
+    <div class="px-4">
+      <p>輸入要轉換的欄位，並以空格隔開</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step6.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>7. 輸入預測目標</h3>
+    <div class="px-4">
+      <p>輸入要預測的欄位</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step7.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>8. 輸入取樣頻率</h3>
+    <div class="px-4">
+      <p>輸入取樣頻率(e.g. 100), 單位(HZ)</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step8.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>9. 輸入檔案名稱</h3>
+    <div class="px-4">
+      <p>輸入完成後，顯示前面輸入的資訊並進行轉換。
+        轉換完成在相同目錄下得到結果(feature_trans.csv)，
+        並可進行下一次輸入</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step9.png' %}" alt="upload image">
+  </div>
+</div>
+<div class="row p-4">
+  <div class="col-lg-6 col-12 align-self-center">
+    <h3>10. 例外處理</h3>
+    <div class="px-4">
+      <p>若輸入錯誤則會顯示錯誤說明，並要求重新輸入</p>
+    </div>
+  </div>
+  <div class="col-lg-6 col-12">
+    <img class="img-fluid" src="{% static 'images/hfm-step10.png' %}" alt="upload image">
+  </div>
+</div>
 {% endblock %}

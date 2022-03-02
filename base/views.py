@@ -11,6 +11,6 @@ def feature_transform(request):
     return render(request, 'base/feature-transform.html')
 
 def download_module(request):
-    filename = 'media/example/titanic.csv'
+    filename = 'media/example/HighFreqTran.rar'
     response = FileResponse(open(filename, 'rb'))
     return response
