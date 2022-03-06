@@ -236,10 +236,10 @@ def show_indicator(request, data_id):
   column_df = pd.read_csv(data.attribute_data)
 
   # check raw data and column type format
-  try:
-    correctFormat = check_data_format(raw_df, column_df)
-  except:
-    correctFormat = False
+  # try:
+  correctFormat = check_data_format(raw_df, column_df)
+  # except:
+  #   correctFormat = False
 
   if correctFormat:
     # get security indicator score by data
@@ -462,10 +462,10 @@ def show_data(request, data_id):
   raw_df = pd.read_csv(data.rawdata)
   column_df = pd.read_csv(data.attribute_data)
 
-  try:
-    correctFormat = check_data_format(raw_df, column_df)
-  except:
-    correctFormat = False
+  # try:
+  correctFormat = check_data_format(raw_df, column_df)
+  # except:
+  #   correctFormat = False
   
   if correctFormat:
     # change attribute data to json format
@@ -538,15 +538,25 @@ def check_data_format(raw_df, column_df):
   for _, row in column_df.iterrows():
     column_dict[row['Column']] = row['Attribute']
 
+  # check whether column in raw data also in column data
   for key in correct_dict.keys():
     if key not in column_dict:
       return False
+
+  # Check if the type of problem is classification or regression
+  if column_dict['problem'] != 'classification' and column_dict['problem'] != 'regression':
+    return False
+
+  # Check if y is a column of the raw data
+  if column_dict['y'] not in raw_df.columns:
+    return False 
+
   return True
 
 def handle_other_type(raw_df, column_dict):
   drop_cols = []
   for key, value in column_dict.items():
-    if value == 'other':
+    if value.lower() == 'other':
       drop_cols.append(key)
       
   new_df = raw_df.drop(columns=drop_cols)
@@ -615,28 +625,32 @@ def get_accuracy(data, column_dict):
 
 def get_infoContent(data, column_dict):
     result = {}
-    
-    infoContent = InfoContent(data, column_dict)
   
-    if infoContent.problem == 'regression':
-      result['var_score'] = infoContent.get_variance_score()
-      result['gain_ratio'] = {}
-      result['total_score'] = 0
+    infoContent = InfoContent(data, column_dict)
+    result['var_score'] = infoContent.get_variance_score()
+    result['gain_ratio'] = infoContent.get_gain_ratio()
 
-    elif infoContent.problem == 'classification':
-      result['gain_ratio'] = infoContent.get_gain_ratio()
-      # infomation content score
-      total_score = 0
-      if(len(result['gain_ratio']) > 0):
-        for v in result['gain_ratio'].values():
-          total_score += v / len(result['gain_ratio'])
-
-      result['total_score'] =  total_score
-      result['var_score'] = {}
+    total_score = 0
+    if column_dict["problem"] == 'classification':
+      for v in result['gain_ratio'].values():
+        total_score += v / len(result['gain_ratio'])
 
     else:
-      raise ValueError("Problem's category must be classification or regression.")
-    
+      gain_ratio_score = 0
+      var_score = 0
+      # calculate gain ratio score
+      if(len(result['gain_ratio']) > 0):
+        for v in result['gain_ratio'].values():
+          gain_ratio_score += v / len(result['gain_ratio'])
+      # calculate variance score
+      if(len(result['var_score']) > 0):
+        for v in result['var_score'].values():
+          var_score += v / len(result['var_score'])
+
+      total_score = int(.5*gain_ratio_score + .5*var_score)
+
+    result['total_score'] = total_score
+
     return result
 
 def get_security(data):
@@ -763,12 +777,7 @@ def get_timeliness(data):
 
 def get_completeness_score(data, column_dict):
     comp = Completeness(data, column_dict)
-
-    # try:
-    #   mece_score = comp.mece()
-    # except:
-    #   mece_score = -1
     mece_score, rs_history = comp.mece()
-    print(rs_history.keys())
+    # print(rs_history.keys())
 
     return mece_score

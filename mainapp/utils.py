@@ -105,11 +105,8 @@ class InfoContent:
         self.y = self.column_dict['y']
         self.problem = self.column_dict['problem']
         
-    def get_data(self):
-        return self.data
-
-    def cal_class_info(self, x, y):
-        data = self.get_data()
+    def cal_class_info(self, x, y, data):
+        # data = self.get_data()
         # save x's different values in unique_val
         unique_val = data[x].unique()
         ent = 0
@@ -120,12 +117,11 @@ class InfoContent:
             ent += entropy([i/len(tmp_df) for i in cate], base=2) * len(tmp_df) / len(data) 
         return ent
 
-    def cal_gain_ratio(self, x, y):
-        data = self.get_data()
+    def cal_gain_ratio(self, x, y, data):
         y_list = list(pd.value_counts(data[y]))
         info = entropy(y_list, base=2)
 
-        info_class = self.cal_class_info(x, y)
+        info_class = self.cal_class_info(x, y, data)
 
         gain_class = info - info_class
 
@@ -136,37 +132,26 @@ class InfoContent:
 
         return gain_ratio
 
-    def cal_gain_ratio_score(self, x ,y):
-        data = self.get_data()
-
-        gain_ratio = self.cal_gain_ratio(x, y)
-
-        # calculate upper bound
-        # new_col = [1 for _ in range(len(data[x]))]
-        # new_col[-1] = 0
-        # data['New_Col'] = new_col
-        # upper_bound = self.cal_gain_ratio('New_Col', y)
-
-        # if((gain_ratio / upper_bound) >= 1):
-        #     score = 1
-        # else:
-        #     score = 1-(gain_ratio/upper_bound)
-
-        # return int(100 * score)
-        return int(100 * gain_ratio)
-
     def get_gain_ratio(self):
         res = {}
 
         if self.problem == "classification":
             for col in self.data.columns:
                 if(col != self.y):
-                    res[col] = self.cal_gain_ratio_score(col, self.y)
+                    used_data = self.data[[col, self.y]]
+                    res[col] = int(100 * self.cal_gain_ratio(col, self.y, used_data))
 
-        elif self.problem == "regression":
-            return res
         else:
-            return res
+            bins = [np.min(self.data[self.y])-1 , np.quantile(self.data[self.y], .25), np.quantile(self.data[self.y], .5), np.quantile(self.data[self.y], .75), np.max(self.data[self.y])+1]
+            group_y = pd.cut(self.data[self.y],
+                            bins=bins,
+                            labels=['<Q1','Q1-Q2', 'Q2-Q3', '>Q3'],
+                            right=False)
+
+            for col in self.data.columns:
+                if(col != self.y and (self.column_dict[col] == 'I_nominal' or self.column_dict[col] == 'C_nominal')):
+                    used_data = pd.concat([self.data[col], group_y], axis=1)
+                    res[col] = int(100 * self.cal_gain_ratio(col, self.y, used_data))
     
         # sort by value to descending order
         res = dict(sorted(res.items(), key=lambda item: item[1], reverse=True))
@@ -175,25 +160,27 @@ class InfoContent:
 
     def get_variance_score(self):
         res = {}
+        if self.problem == 'regression':
+            for col in self.data.columns:
+                if(col != self.y and self.column_dict[col] == 'I_ordinal'):
+                    samples_var = []
+                    # random sample 30 times
+                    for _ in range(30):
+                        s = np.random.uniform(min(self.data[col]), max(self.data[col]), len(self.data))
+                        samples_var.append(np.var(s))
 
-        for col in self.data.columns:
-            if(col != self.y and self.column_dict[col] == 'I_ordinal' or self.column_dict[col] == 'I_nominal'):
-                samples_var = []
-                # random sample 30 times
-                for _ in range(30):
-                    s = np.random.uniform(min(self.data[col]), max(self.data[col]), len(self.data))
-                    samples_var.append(np.var(s))
+                    if np.mean(samples_var) <= 0:
+                        var_ratio = 0
+                    else:
+                        var_ratio = np.var(self.data[col]) / np.mean(samples_var)
 
-                if np.mean(samples_var) <= 0:
-                    var_ratio = 0
-                else:
-                    var_ratio = np.var(self.data[col]) / np.mean(samples_var)
-
-                if var_ratio >= 1:
-                    res[col] = 100
-                else:
-                    res[col] = int(100 * var_ratio)
+                    if var_ratio >= 1:
+                        res[col] = 100
+                    else:
+                        res[col] = int(100 * var_ratio)
         
+        else:
+            return res    
         # sort by value to descending order
         res = dict(sorted(res.items(), key=lambda item: item[1], reverse=True))
     

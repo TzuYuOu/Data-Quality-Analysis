@@ -1,9 +1,0 @@
-Column,Attribute
-y,Drug
-problem,classification
-Age,I_ordinal
-Sex,C_nominal
-BP,C_ordinal
-Cholesterol,C_ordinal
-Na_to_K,I_ordinal
-Drug,C_nominal
