@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
 {% if form.errors %}
@@ -16,7 +16,7 @@
   <div class="card-body">
     <form action="{% url 'register_user' %}" method="POST">
       {% csrf_token %}
-      {{ form.as_p }}
+      {{ form | crispy }}
       <input type="submit" class="btn btn-success" value="Submit"></input>
     </form>
   </div>
