@@ -5,9 +5,9 @@
   {% include 'mainapp/data_navbar.html' %}
 
   <div class="alert alert-warning" >
-    <p>You can update your data here!</p>
+    <h4>Update your data here!</h4>
     <p>Please upload the following two CSV files to assess the quality of the data. 
-      If the data is not in the correct format, you may obtain wrong evaluation results.</p>
+      If the data is not in the correct format, we will not be able to calculate the correct evaluation results correctly.</p>
     <h4>Raw data</h4>
     <ul>
       <li>File should no larger than 2MB and must be CSV format.</li>
@@ -29,6 +29,7 @@
       {% csrf_token %}
       {{ form.as_p }}
       <input type="submit" value="Submit" class="btn btn-success">
+      <a href="{% url 'show-data' data_id %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
 

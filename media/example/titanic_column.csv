@@ -1,7 +1,7 @@
 Column,Attribute
 y,Survived
-problem,category
-PassengerId,I_nominal
+problem,classification
+PassengerId,other
 Survived,I_nominal
 Pclass,I_ordinal
 Name,C_nominal

@@ -1,8 +1,0 @@
-{
-  "problem": "regression",
-  "target_y": ["RUL_I"],
-  "target_xs": ["voltmean_24h","rotatemean_24h"],
-  "usedFilter": false,
-  "windowSize": 1000,
-  "samplingFrequency": 1000
-}

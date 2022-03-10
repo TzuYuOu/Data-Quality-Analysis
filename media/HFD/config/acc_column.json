@@ -1,8 +1,0 @@
-{
-  "problem": "regression",
-  "target_y": ["wconfid"],
-  "target_xs": ["x","y","z"],
-  "usedFilter": false,
-  "windowSize": 100,
-  "samplingFrequency": 100
-}

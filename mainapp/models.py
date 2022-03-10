@@ -38,6 +38,16 @@ class Data(models.Model):
   def __str__(self):
       return self.name
 
+  def save(self, *args, **kwargs):
+    try:
+        this = Data.objects.get(id=self.id)
+        if this.rawdata != self.rawdata:
+            this.rawdata.delete(save=False)
+        if this.attribute_data != self.attribute_data:
+            this.attribute_data.delete(save=False)
+    except: pass
+    super(Data, self).save(*args, **kwargs)
+
   def delete(self, *args, **kwargs):
       self.rawdata.delete()
       self.attribute_data.delete()

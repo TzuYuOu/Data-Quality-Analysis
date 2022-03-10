@@ -78,14 +78,8 @@ def update_data(request, data_id):
 
     form = DataForm(request.POST, instance=data)
     if form.is_valid():
-      if(os.path.exists(old_rawdata.path)):
-        os.remove(old_rawdata.path)
-
-      if(os.path.exists(old_attrdata.path)):
-        os.remove(old_attrdata.path)
-      
       form.save()
-      return redirect('show-data', data_id)
+      return redirect('list-data')
     else:
       print('form is invalid')
   
@@ -176,7 +170,7 @@ def fillout_security(request, data_id):
     
   if form.is_valid():
     form.save()
-    return redirect('show-data', data_id)
+    return redirect('show-indicator', data_id)
   
   context = {
     'form': form,
@@ -203,7 +197,7 @@ def fillout_timeliness(request, data_id):
     
   if form.is_valid():
     form.save()
-    return redirect('show-data', data_id)
+    return redirect('show-indicator', data_id)
   
   context = {
     'form': form,
