@@ -466,6 +466,7 @@ class Overview:
         return self.overview_category
         
     def overview_variable_num(self):
+        
         variable_num = self.I_nominal + self.I_ordinal
         var_overview = self.data_old[variable_num].describe()
         self.overview_numeric = {}
@@ -495,6 +496,15 @@ class Overview:
         return self.overview_numeric
 
     def get_summary(self):
+        """
+        Define variable type in summary
+            missing_ratio_alarm
+                type: Dict[str, float]
+            imbalance_alarm
+                type: Dict[str, float]
+            duplicated_data
+                type: dataframe
+        """
         # check missing value alarm
         missing_ratio_threshold = 0.1
         missing_ratio_alarm = {}
@@ -509,16 +519,22 @@ class Overview:
             data_without_na = self.data_old[key].dropna()
             all_cate_ratio = list(data_without_na.value_counts() / sum(data_without_na.value_counts()))
             imbalance_ratio = max(all_cate_ratio) / min(all_cate_ratio)
-            # all_cate_ratio = list(self.data[key].value_counts() / sum(self.data[key].value_counts()))
-            # print(all_cate_ratio)
-            # imbalance_ratio = max(all_cate_ratio) / min(all_cate_ratio)
             if imbalance_ratio > 10:
                 imbalance_cate.setdefault(key, imbalance_ratio)
         imbalance_cate = {k: v for k, v in sorted(imbalance_cate.items(), key=lambda item: item[1], reverse=True)}
        
+        # check duplicate except for y
+        cols = []
+        y = self.column_dict['y']
+        for col in self.data.columns:
+            if col != y:
+                cols.append(col)
+        duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[y])
+        
         summary = {
             "missing_ratio_alarm": missing_ratio_alarm,
-            'Imbalance_Alarm': imbalance_cate
+            "Imbalance_Alarm": imbalance_cate,
+            "duplicated_data": duplicated_data
         }
 
         return summary

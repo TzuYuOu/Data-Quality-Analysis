@@ -252,8 +252,36 @@
                   </table> 
                 </div>
               {% else %}
-                No data imbalance in the column.
+                <p>No data imbalance in the column.</p>
               {% endif %}
+
+              {% if summary.duplicated_data|length %}
+                <strong class="text-danger">There are duplicated data except for y:</strong>
+                <div class="p-4">
+                  <table class="table">
+                    <tr>
+                      <td>Index</td>
+                      {% for col in summary.duplicated_data.columns %}
+                        <td>
+                          {{col}}
+                        </td>
+                      {% endfor %}
+                    </tr>
+                      {% for index, row in summary.duplicated_data.iterrows %}
+                        <tr>
+                          <td>{{index}}</td>
+                          {% for cell in row %}
+                            <td>
+                              {{cell}}
+                            </td>
+                          {% endfor %}
+                        </tr>
+                      {% endfor %}
+                  </table>
+                </div>
+              {% endif %}
+              
+                
                
             </div>
             <!-- Completeness suggestion -->
