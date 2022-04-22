@@ -529,8 +529,9 @@ class Overview:
         for col in self.data.columns:
             if col != y:
                 cols.append(col)
-        duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[y])
-        
+        duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[cols[0]])
+
+ 
         summary = {
             "missing_ratio_alarm": missing_ratio_alarm,
             "Imbalance_Alarm": imbalance_cate,
