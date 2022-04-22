@@ -12,8 +12,7 @@ from scipy.stats import skew
 from scipy.stats import kurtosis
 from scipy.stats import entropy
 
-from plotly.offline import plot
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 
 class Accuracy:
     def __init__(self, data, sample_dict):
@@ -442,11 +441,13 @@ class Overview:
             for k, value in zip(cate_name, cate_ratio):
                 cate_dict[k] = value
             
-            fig = go.Bar(
-                x=list(cate_dict.keys()), 
-                y=list(cate_dict.values()),
+            barFig = go.Figure(
+                go.Bar(
+                    x=list(cate_dict.keys()), 
+                    y=list(cate_dict.values()),
+                )
             )
-            graph = plot([fig], output_type='div')
+            barFig = barFig.to_html()
 
             all_cate_ratio = list(data_without_na.value_counts() / sum(data_without_na.value_counts()))
             imbalance_ratio = max(all_cate_ratio) / min(all_cate_ratio)
@@ -458,7 +459,7 @@ class Overview:
                 "Distinct_Ratio": distinct_ratio,
                 "Imbalance_Ratio": imbalance_ratio,
                 "Category_dict": cate_dict,
-                "Graph": graph
+                "BarFig": barFig
             }
         
             self.overview_category.setdefault(key, category_char)
@@ -466,7 +467,12 @@ class Overview:
         return self.overview_category
         
     def overview_variable_num(self):
-        
+        """
+        overview_numeric
+            type: Dict[str, dict]
+        numeric_char
+            type: Dict[str, float | graph ]
+        """
         variable_num = self.I_nominal + self.I_ordinal
         var_overview = self.data_old[variable_num].describe()
         self.overview_numeric = {}
@@ -474,9 +480,16 @@ class Overview:
         for key in variable_num:
             # draw histogram of the variable
             data_without_na = self.data_old[key].dropna()
-            fig = go.Histogram(x=data_without_na)
-            graph = plot([fig], output_type='div')
-
+            hisFig = go.Figure(
+                go.Histogram(x=data_without_na)
+            )
+            hisFig = hisFig.to_html()
+            # draw boxplot of the variable
+            boxFig = go.Figure(
+                go.Box(y=data_without_na, name=key)
+            )
+            boxFig = boxFig.to_html()
+            # calculate basic statistics
             numeric_char = {
                 "Missing_Ratio": 100*self.column_missing_ratio[key],           
                 "Mean": var_overview[key]['mean'],
@@ -488,7 +501,8 @@ class Overview:
                 "Max": var_overview[key]['max'],
                 "Kurt": kurtosis(data_without_na),
                 "Skew": skew(data_without_na),
-                "Graph": graph
+                "HisFig": hisFig,
+                "BoxFig": boxFig
             }
 
             self.overview_numeric.setdefault(key, numeric_char)
