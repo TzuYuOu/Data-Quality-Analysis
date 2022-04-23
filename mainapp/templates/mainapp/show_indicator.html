@@ -316,13 +316,12 @@
             <div class="tab-pane fade" id="list-information" role="tabpanel" aria-labelledby="list-information-list">
               {% if info_warning %}
                 <div>
-                  <p class="text-danger">
-                    The value in  
-                    {% for col, _ in info_warning.items %}
-                      <strong>"{{ col }}",</strong>  
-                    {% endfor %}
-                    are too single!
+                  <p>
+                    These variables in the dataset contain a low amount of information  
                   </p>
+                  {% for col, v in info_warning.items %}
+                      <li>{{ col}}: {{ v }}</li>
+                  {% endfor %}
                 </div>
               {% else %}
                 ...

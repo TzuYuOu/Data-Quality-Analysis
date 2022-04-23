@@ -83,6 +83,7 @@ class Accuracy:
             save_result[x.columns[i]] = Accuracy_Score
         
         res = {}
+        save_result = {k: v for k, v in sorted(save_result.items(), key=lambda x: x[1])}
         res['acc_res'] = save_result
         res['acc_beta'] = save_beta
 
@@ -543,8 +544,11 @@ class Overview:
         for col in self.data.columns:
             if col != y:
                 cols.append(col)
-        duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[cols[0]])
-
+        # sort duplicate data by different number of column
+        if len(cols) >= 2:        
+            duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[cols[0], cols[1]])
+        else:
+            duplicated_data = self.data[self.data.duplicated(subset=cols,keep=False)].sort_values(by=[cols[0]])
  
         summary = {
             "missing_ratio_alarm": missing_ratio_alarm,

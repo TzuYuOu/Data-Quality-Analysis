@@ -299,6 +299,10 @@ def show_indicator(request, data_id):
     for key, value in infoContent['var_score'].items():
       if value <= 0:
         infoWarning[key] = value
+    
+    for key, value in infoContent['gain_ratio'].items():
+      if value <= 0:
+        infoWarning[key] = value
 
 
     context = {
